@@ -17,4 +17,11 @@ window.ORDBOG_DATA = [
     examples: ["Internettet kalder alle for snefnug."],
     tags: ["ironi"],
   },
+  {
+    word: "Nannaisme",
+    definition:
+      "En tilstand der stammer fra Nanna Katrine Hermansen, som er en kombination af flere diagnoser.",
+    examples: ["Jeg har Nannaisme.", "Det bare Nannaisme, det der."],
+    tags: ["Tilstand", "humor"],
+  },
 ];
