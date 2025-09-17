@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ordbog – alperenozer.dk</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>ordbog<span class="muted">.alperenozer.dk</span></h1>
+    <div class="sub">Klik et ord, få en definition. Del direkte links. Alt er statisk ✨</div>
+  </header>
+
+  <main>
+    <div class="searchbar">
+      <input id="q" type="search" placeholder="Søg i ord …" aria-label="Søg">
+      <select id="tagfilter" aria-label="Filtrér på tag">
+        <option value="">Alle tags</option>
+      </select>
+    </div>
+
+    <div class="container">
+      <section><div id="list"></div></section>
+      <aside class="details card">
+        <div id="detailsEmpty" class="muted">Vælg et ord for at se detaljer 👈</div>
+        <div id="details" class="hidden">
+          <h2 id="dWord"></h2>
+          <p id="dDef"></p>
+          <div id="dTags"></div>
+          <h4>Eksempler</h4>
+          <ul id="dExamples"></ul>
+          <button id="copyLink" type="button">Kopiér direkte link</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer>
+    Statisk side hostet på GitHub Pages. Tilpas <code>words.js</code> for at tilføje ord.
+  </footer>
+
+  <script src="words.js"></script>
+  <script>
+    const el = (s) => document.querySelector(s);
+    const slugify = s => s.toLowerCase().normalize('NFD')
+      .replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+
+    const DATA = (window.ORDBOG_DATA||[]).map(d=>({...d,slug:d.slug||slugify(d.word)}));
+    const tagSel = el('#tagfilter');
+    [...new Set(DATA.flatMap(d=>d.tags||[]))].sort().forEach(t=>{
+      const o=document.createElement('option'); o.value=t;o.textContent=t; tagSel.appendChild(o);
+    });
+
+    function renderList(){
+      const q=el('#q').value.toLowerCase(), tag=tagSel.value;
+      const listEl=el('#list'); listEl.innerHTML='';
+      DATA.filter(d=>(!q||d.word.toLowerCase().includes(q)||d.definition.toLowerCase().includes(q))
+                   &&(!tag||(d.tags||[]).includes(tag)))
+          .forEach(d=>{
+        const card=document.createElement('article');
+        card.className='card';
+        card.innerHTML=`<h3><a href="#ord=${d.slug}">${d.word}</a></h3>
+                        <p class="muted">${d.definition}</p>`;
+        listEl.appendChild(card);
+      });
+    }
+
+    function show(slug){
+      const d=DATA.find(x=>x.slug===slug); if(!d)return;
+      location.hash='ord='+d.slug;
+      el('#detailsEmpty').classList.add('hidden');
+      el('#details').classList.remove('hidden');
+      el('#dWord').textContent=d.word;
+      el('#dDef').textContent=d.definition;
+      el('#dExamples').innerHTML=(d.examples||[]).map(e=>`<li>${e}</li>`).join('');
+      el('#dTags').innerHTML=(d.tags||[]).map(t=>`<span class="badge">${t}</span>`).join('');
+      el('#copyLink').onclick=()=>navigator.clipboard.writeText(location.href);
+    }
+
+    function route(){ const slug=new URLSearchParams(location.hash.slice(1)).get('ord'); if(slug) show(slug);}
+    el('#q').oninput=renderList; tagSel.onchange=renderList; window.onhashchange=route;
+    renderList(); route();
+  </script>
+</body>
+</html>

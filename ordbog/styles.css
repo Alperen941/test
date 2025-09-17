@@ -1,0 +1,7 @@
+body { font-family:sans-serif; margin:0; }
+header { padding:2rem; text-align:center; border-bottom:1px solid #eee; }
+.container { display:grid; grid-template-columns:2fr 1fr; gap:1rem; max-width:900px; margin:1rem auto; }
+.card { border:1px solid #ddd; padding:1rem; border-radius:.5rem; background:#fff; }
+.hidden { display:none; }
+.muted { color:#777; }
+.badge { display:inline-block; padding:.2rem .4rem; border:1px solid #ccc; border-radius:.3rem; margin-right:.2rem; }
